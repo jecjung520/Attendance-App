@@ -1,60 +1,64 @@
-import React, { Component, useState } from 'react';
+import React, { useState, Component } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { firebase } from '../../Config';
+//import firestore from '@react-native-firebase/firestore';
 import Loader from '../common/Loader';
+import uuid from 'react-native-uuid';
 
-const Login = ({ navigation }) => {
-
+const Signup = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const checkLogin = () => {
+
+  const saveDataOnFirestore = () => {
+    let userId = uuid.v4();
     setModalVisible(true);
+
     firebase.firestore()
       .collection('users')
-      // Filter results
-      .where('email', '==', email)
-      .get()
-      .then(querySnapshot => {
+      .doc(userId)
+      .set({
+        name: name,
+        email: email,
+        password: password,
+        userId: userId,
+      })
+      .then(() => {
+        console.log('User added!');
         setModalVisible(false);
-        console.log(querySnapshot.docs[0]._data);
-        // console.log(querySnapshot._docs[0]._data);
-        // if (password === querySnapshot._docs[0]._data.password) {
-        //   navigation.navigate('Home');
-        // } else {
-        //   alert("Wrong Password");
-        // }
+        navigation.goBack();
       });
   }
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <TextInput
+        placeholder="Enter Name"
+        value={name}
+        onChangeText={txt => setName(txt)}
+        style={styles.idpw} />
+      <TextInput
         placeholder="Enter Email Id"
         value={email}
         onChangeText={txt => setEmail(txt)}
         style={styles.idpw} />
-
       <TextInput
         placeholder="Enter Password"
         value={password}
         onChangeText={txt => setPassword(txt)}
         style={styles.idpw} />
-
       <TouchableOpacity
         style={styles.but}
         onPress={() => {
-          if (email !== '' && password !== '') {
-            checkLogin();
-          } else {
-            alert("Please Enter Correct ID or Password")
-          }
+          if (name !== '' && email !== '' && password !== '')
+            saveDataOnFirestore();
+          else
+            alert("Please Enter All Data")
         }}>
-        <Text style={{ color: '#fff', fontSize: 20 }}>Login</Text>
+        <Text style={{ color: '#fff', fontSize: 20 }}>Sign up</Text>
       </TouchableOpacity>
-      <Text style={styles.text} onPress={() => {
-        navigation.navigate('Signup')
-      }}>Create New Account</Text>
+      <Text style={styles.text}>Already have account</Text>
       <Loader modalVisible={modalVisible} setModalVisible={setModalVisible} />
     </View>
   );
@@ -68,14 +72,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignSelf: 'center',
     paddingLeft: 20,
-    marginTop: 50
+    marginTop: 20
   },
   but: {
     width: '90%',
     height: 50,
     backgroundColor: '#000',
     borderRadius: 10,
-    marginTop: 50,
+    marginTop: 20,
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
@@ -89,4 +93,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Login;
+export default Signup;

@@ -1,9 +1,13 @@
 import { NavigationContainer, StackActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { Component } from 'react';
+import Splash from './screens/Splash';
+import Login from './screens/Login';
+import Signup from './screens/Signup';
+import Home from './screens/Home';
 import { View, Text } from 'react-native';
 
-const stack = createStackNavigator();
+const Stack = createStackNavigator();
 
 const AppNavigator = () => {
     return (
@@ -26,7 +30,7 @@ const AppNavigator = () => {
                 />
                 <Stack.Screen
                     component={Home}
-                    name='Home'
+                    name='Home '
                     options={{ headerShown: false }} 
                 />
             </Stack.Navigator>
