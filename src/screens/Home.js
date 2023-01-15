@@ -3,7 +3,8 @@ import {StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Home() {
+// export default function Home() {
+const Home = ({ navigation }) => {
   const [currentDate, setCurrentDate] = useState('');
   const [checkInEnable, setCheckInEnable] = useState(true);
   const [checkOutEnable, setCheckOutEnable] = useState(false);
@@ -21,16 +22,6 @@ export default function Home() {
 
   const curDate = new Date().getDate() + "/" + (new Date().getMonth() + 1) + "/" + new Date().getFullYear();
 
-  // const saveDate = async () => {
-  //   await AsyncStorage.setItem(
-  //     'DATE',
-  //     new Date().getDate() +
-  //     "/" +
-  //     (new Date().getMonth() + 1) +
-  //     "/" +
-  //     new Date().getFullYear()
-  //   );
-  // }
   const saveDate = async() => {
     await AsyncStorage.setItem('Date', curDate);
   }
@@ -116,3 +107,5 @@ const styles = StyleSheet.create({
     borderRadius:10
   },
 })
+
+export default Home;
