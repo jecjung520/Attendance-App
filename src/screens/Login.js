@@ -4,29 +4,15 @@ import { TextInput } from 'react-native-gesture-handler';
 import { firebase } from '../../Config';
 import { getDatabase, ref, onValue} from "firebase/compat/database";
 import Loader from '../common/Loader';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = ({ navigation }) => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  // const dbRef = firebase.database().ref();
-  // const db = getDatabase();
 
-  // const checkLogin = () => {
-  //   setModalVisible(true);
-  //   dbRef.child("users").child(userId).get().then((snapshot) => {
-  //     if (snapshot.exists()) {
-  //       console.log(snapshot.val());
-  //     } else {
-  //       console.log("No data available");
-  //     }
-  //     }).catch((error) => {
-  //       console.error(error);
-  //   });
-  // }
-
-  const checkLogin = () => {
+  const checkLogin = async() => {
     setModalVisible(true);
     firebase.firestore()
       .collection('users')
@@ -37,30 +23,16 @@ const Login = ({ navigation }) => {
         setModalVisible(false);
         console.log(querySnapshot.docs[0].data());
         if (password === querySnapshot.docs[0].data().password) {
-          navigation.navigate('Splash');
+          nextScreen(querySnapshot.docs[0].data());
         } else {
           alert("Wrong Password");
         }
-
-  //       // dbRef.child("users").child(userId).get().then((snapshot) => {
-  //       //   if (snapshot.exists()) {
-  //       //     console.log(snapshot.val());
-  //       //   } else {
-  //       //     console.log("No data available");
-  //       //   }
-  //       // }).catch((error) => {
-  //       //   console.error(error);
-  //       // });
-
-        // console.log(firebase.firestore().collection('users').get());
-        //console.log(querySnapshot.docs[0]._data);
-        // console.log(querySnapshot._docs[0]._data);
-        // if (password === querySnapshot._docs[0]._data.password) {
-        //   navigation.navigate('Home');
-        // } else {
-        //   alert("Wrong Password");
-        // }
       });
+  }
+  const nextScreen = async data =>{
+    await AsyncStorage.setItem('EMAIL', email);
+    await AsyncStorage.setItem('USERID', data.userId);
+    navigation.navigate('Main');
   }
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
