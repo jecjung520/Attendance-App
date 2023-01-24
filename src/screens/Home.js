@@ -93,9 +93,9 @@ const Home = () => {
 
   const uploadCheckOut = () => {
     let currentTime = (new Date().getHours() + ":" + new Date().getMinutes());
-    // attendanceList[attendanceList.length - 1].checkIn = attendanceList[attendanceList.length - 1].checkIn;
-    // attendanceList[attendanceList.length - 1].checkOut = currentTime;
-    // attendanceList[attendanceList.length - 1].date = currentDate;
+    attendanceList[attendanceList.length - 1].checkIn = attendanceList[attendanceList.length - 1].checkIn;
+    attendanceList[attendanceList.length - 1].checkOut = currentTime;
+    attendanceList[attendanceList.length - 1].date = currentDate;
 
     firebase.firestore()
       .collection('users')

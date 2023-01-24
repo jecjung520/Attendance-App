@@ -32,7 +32,8 @@ const Login = ({ navigation }) => {
   const nextScreen = async data =>{
     await AsyncStorage.setItem('EMAIL', email);
     await AsyncStorage.setItem('USERID', data.userId);
-    navigation.navigate('Main');
+    if (data.userId.startsWith('T')) navigation.navigate('Main2');
+    else navigation.navigate('Main');
   }
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

@@ -7,6 +7,8 @@ import Signup from './screens/Signup';
 import Home from './screens/Home';
 import { View, Text } from 'react-native';
 import Main from './screens/Main';
+import Main2 from './screens/Main2';
+import Student from './screens/Student';
 
 const Stack = createStackNavigator();
 
@@ -32,6 +34,16 @@ const AppNavigator = () => {
                 <Stack.Screen
                     component={Main}
                     name='Main'
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    component={Main2}
+                    name='Main2'
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    component={Student}
+                    name='Student'
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>
