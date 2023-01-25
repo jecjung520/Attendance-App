@@ -1,8 +1,9 @@
 import React, { Component, useState } from 'react';
 import { Image, StyleSheet, View, Text } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import Attendance from '../tabs/Attendance';
+
 import Leave from '../tabs/Leave';
+import Schedule from '../tabs/Schedule';
 import Student from './Student';
 
 const Main2 = () => {
@@ -12,7 +13,7 @@ const Main2 = () => {
             {selTab == 0 ?
                 (<Student />)
                 : selTab == 1 ?
-                    (<Attendance />)
+                    (<Schedule />)
                     : (<Leave/>)}
             <View style={styles.text}>
                 <TouchableOpacity style={styles.button} onPress={() => {

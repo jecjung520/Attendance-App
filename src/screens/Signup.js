@@ -48,6 +48,7 @@ const Signup = ({ navigation }) => {
         value={password}
         onChangeText={txt => setPassword(txt)}
         style={styles.idpw} />
+        
       <TouchableOpacity
         style={styles.but}
         onPress={() => {
@@ -58,9 +59,12 @@ const Signup = ({ navigation }) => {
         }}>
         <Text style={{ color: '#fff', fontSize: 20 }}>Sign up</Text>
       </TouchableOpacity>
-      <Text style={styles.text}>Already have account</Text>
       <Loader modalVisible={modalVisible} setModalVisible={setModalVisible} />
+      <View>
+      <Text style={styles.text} onPress={() => navigation.navigate('Login')}>Already have account</Text>
+      </View>
     </View>
+    
   );
 }
 

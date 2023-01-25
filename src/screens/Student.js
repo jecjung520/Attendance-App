@@ -1,118 +1,127 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { Component, useEffect, useState } from 'react';
 import { firebase } from '../../Config';
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text, Image, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 
 const Student = () => {
-  const [currentDate, setCurrentDate] = useState('');
-  const [currentTime, setCurrentTime] = useState('');
-  useEffect(() => {
-    setCurrentDate(
-      new Date().getDate() +
-      "/" +
-      (new Date().getMonth() + 1) +
-      "/" +
-      new Date().getFullYear(),
-    );
-    setCurrentTime(
-      new Date().getHours() +
-      ":" + 
-      new Date().getMinutes() +
-      ":" +
-      new Date().getSeconds()
-    );
-    saveDate();
-    saveTime();
-    // getSavedDates();
-  }, []); 
 
   const curDate = new Date().getDate() + "/" + (new Date().getMonth() + 1) + "/" + new Date().getFullYear();
-  const curTime = new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds();
-
-  const saveDate = async () => {
-    await AsyncStorage.setItem('Date', curDate);
-  }
-
-  const saveTime = async () => {
-    await AsyncStorage.setItem('Time', curTime);
-  }
-
-    return (
-      <View style={{ flex: 1 }}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Hello</Text>
+  return (
+    <SafeAreaView style = {styles.container}>
+      <StatusBar></StatusBar>
+      <View style = {styles.innerContainer}>
+        <View>
+          <Image source={require('../images/cityu.png')} style={styles.cityu}/>
+        </View>
+        <View>
+          <Text style={styles.innerText}>CityU Attendance</Text>
+          <Text style={styles.date}>{curDate}</Text>
+        </View>
       </View>
 
-      <Text style={styles.dateText}>
-        {'Today Date: ' + currentDate + '   ' + currentTime }
-      </Text>
-      <View style={styles.buttons}>
-        {/* present button */}
-        <TouchableOpacity style = {styles.checkIn}>
-          <Text style={{ color: 'white' }}>Present</Text>
-        </TouchableOpacity>
-
-        {/* absent button */}
-        <TouchableOpacity style={styles.checkIn}>
-          <Text style={{ color: 'white' }}>Absent</Text>
-        </TouchableOpacity>
+      <Text style={styles.take}>Take Attendance</Text>
+      <View style={{height:80, marginTop:20, marginBottom:20}}>
+        <ScrollView style={styles.weekday} horizontal>  
+          <View style={styles.weekbox}>
+            <Text>MON</Text>
+            <Text style={{fontWeight:'bold'}}>1</Text>
+          </View>
+          <View style={styles.weekbox}>
+            <Text>TUE</Text>
+            <Text style={{fontWeight:'bold'}}>1</Text>
+          </View>
+          <View style={styles.weekbox}>
+            <Text>WED</Text>
+            <Text style={{fontWeight:'bold'}}>1</Text>
+          </View>
+          <View style={styles.weekbox}>
+            <Text>THU</Text>
+            <Text style={{fontWeight:'bold'}}>1</Text>
+          </View>
+          <View style={styles.weekbox}>
+            <Text>FRI</Text>
+            <Text style={{fontWeight:'bold'}}>1</Text>
+          </View>
+        </ScrollView>
       </View>
-    </View>
-    );
+
+      <View>
+        <View style={styles.time}>
+          <Text style={{color:'grey'}}>7:00   -   08:00</Text>
+          <View style={styles.freeArea}>
+            <Text style={{color:'grey'}}>free</Text>
+            <View style={styles.radio}></View>
+          </View>
+        </View>
+      </View>
+
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
-  text: {
-    fontSize: 20,
-    fontWeiht: '800',
-    alignSelf: 'center',
-    marginTop: 100
+  container: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    paddingHorizontal: 30,
+    paddingVertical: 30
   },
-  checkIn: {
-    width: '40%',
-    height: 50,
-    backgroundColor: 'green',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-    marginTop: 50,
-    borderRadius: 10
-  },
-  checkOut: {
-    width: '40%',
-    height: 50,
-    backgroundColor: 'grey',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-    marginTop: 50,
-    borderRadius: 10
-  },
-  header: {
-    width: '100%',
-    height: 60,
-    elevation: 4,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    paddingLeft: 20
-  },
-  headerText: {
-    color: '#000',
-    fontWeight: '700',
-    fontSize: 16
-  },
-  dateText: {
-    fontSize: 15,
-    fontWeight: '700',
-    marginTop: 20,
-    marginLeft: 20
-  },
-  buttons: {
+  innerContainer: {
+    height: 80,
     flexDirection: 'row',
-    width: '100%',
-    height: 60,
-    justifyContent: 'space-evenly',
-    alignItems: 'center'
+    alignItems: 'center',
+    borderColor: '#DBE2EB',
+    borderBottomWidth: 1,
+  },
+  cityu: {
+    width: 80,
+    height: 40,
+    justifyContent: 'center'
+  },
+  innerText: {
+    marginLeft: 10,
+    fontWeight:'bold',
+    color:'grey',
+    fontSize:18,
+  },
+  date: {
+    marginLeft: 10,
+    fontSize:13,
+  },
+  take: {
+    fontWeight:'bold',
+    color:'grey',
+    fontSize:20,
+    marginTop:20
+  },
+  weekbox: {
+    height:73,
+    width:63,
+    borderColor: 'grey',
+    borderWidth:1,
+    borderRadius:12,
+    justifyContent:'center',
+    alignItems:'center',
+    marginRight:5
+  },
+  time: {
+    flexDirection:'row',
+    justifyContent:'space-between'
+  },
+  freeArea: {
+    flexDirection:'row',
+    justifyContent:'center',
+    alignItems:'center'
+  },
+  radio: {
+    height:15,
+    width:15,
+    borderRadius:15,
+    borderColor: 'grey',
+    borderWidth:1,
+    marginLeft:10
   }
 })
 
