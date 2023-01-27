@@ -11,3 +11,4 @@ Following project aims to create an attendance taking mobile application
 3. react-navigation
 4. react-native-gesture-handler
 5. react-native-uuid
+6. react-native-calendars
