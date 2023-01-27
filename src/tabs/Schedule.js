@@ -1,6 +1,8 @@
 import React, { Component, useState } from 'react';
 import { View, Text } from 'react-native';
 import { Agenda } from 'react-native-calendars';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Card } from 'react-native-paper';
 
 const timeToString = (time) => {
     const date = new Date(time);
@@ -38,12 +40,28 @@ const Schedule = () => {
         }, 1000);
       }
 
+    // const renderItem = (item) => {
+    //     return (
+    //         <TouchableOpacity>
+    //             <Card>
+    //                 <Card.content>
+    //                     <View>
+    //                         <Text>{item.name}</Text>
+    //                     </View>
+    //                 </Card.content>
+    //             </Card>
+    //         </TouchableOpacity>
+    //     )
+    // }
+    
     return (
         <View style={{flex:1}}>
             <Agenda
             items={items}
             loadItemsForMonth={loadItems}
-            selected={new Date().getTime()}/>
+            selected={new Date().getTime()}
+            // renderItem={renderItem}
+        />
         </View>
     )
 }

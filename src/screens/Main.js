@@ -4,13 +4,14 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import Attendance from '../tabs/Attendance';
 import Leave from '../tabs/Leave';
 import Home from './Home';
+import Teacher from './Teacher';
 
 const Main = () => {
     const [selectedTab, setSelectedTab] = useState(0)
     return (
         <View style={{ flex: 1 }}>
             {selectedTab == 0 ?
-                (<Home />)
+                (<Teacher />)
                 : selectedTab == 1 ?
                     (<Attendance />)
                     : (<Leave/>)}
