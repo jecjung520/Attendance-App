@@ -1,7 +1,7 @@
 # Attendance Application With Firebase
 
 Following project aims to create an attendance taking mobile application
-* **Language**: React Native
+* **Framework**: React Native
 * **Backend**: Firebase
 * **API**: P2P, Mobile Adhoc Network(MANET)
 
