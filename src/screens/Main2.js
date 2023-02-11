@@ -4,7 +4,10 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import Leave from '../tabs/Leave';
 import Schedule from '../tabs/Schedule';
+import ScanScreen from '../tabs/ScanScreen';
 import Student from './Student';
+import Home from './Home';
+import Attendance from '../tabs/Attendance';
 
 const Main2 = () => {
     const [selTab, setTab] = useState(0)
@@ -13,8 +16,8 @@ const Main2 = () => {
             {selTab == 0 ?
                 (<Student />)
                 : selTab == 1 ?
-                    (<Schedule />)
-                    : (<Leave/>)}
+                    (<Attendance />)
+                    : (<ScanScreen/>)}
             <View style={styles.text}>
                 <TouchableOpacity style={styles.button} onPress={() => {
                     setTab(0);

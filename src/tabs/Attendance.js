@@ -1,5 +1,5 @@
 import React, { Component, useRef, useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity, Share } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 
 const Attendance = ({navigation}) => {
@@ -7,6 +7,24 @@ const Attendance = ({navigation}) => {
     const [QRLogo, setQRLogo] = useState('');
     const [QRImage, setQRImage] = useState('');
     const ref = useRef();
+
+    const GenerateQR=() => {
+      ref.current.toDataURL((data) => {
+      setQRImage('data:image/png;base64,'+data)
+      })
+    }
+
+    const handleShare =async ()=>{
+      const options={
+        title: 'Share your QRcode',
+        url: QRImage,
+      }
+      try {
+        await Share.share(options);
+      } catch (err) {
+        console.log(err)
+      }
+    }
     
     return (
       <SafeAreaView>
@@ -30,11 +48,24 @@ const Attendance = ({navigation}) => {
             </View>
         <QRCode
         size={350}
-        value={navigation.navigate('Login')}
+        value={"QRvalue"}
+        logo={{uri: QRLogo}}
         logoSize={60}
         logoBackgroundColor='transparent'
         getRef={ref}
       />
+      <View style={styles.row}>
+        <TouchableOpacity
+        style={styles.Button}
+        onPress={()=>GenerateQR()}>
+          <Text style={[styles.sectionDescription,{color: '#fff', fontWeight: '900'}]}>Generate QR</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+        style={styles.Button}
+        onPress={()=>handleShare()}>
+          <Text style={[styles.sectionDescription,{color: '#fff', fontWeight: '900'}]}>Share QR</Text>
+        </TouchableOpacity>
+      </View>
       </View>
       </SafeAreaView>
     )
@@ -43,7 +74,7 @@ const Attendance = ({navigation}) => {
 const styles = StyleSheet.create({
     sectionContainer: {
       marginTop: 32,
-      paddingHorizontal: 24,
+      paddingHorizontal: 32,
     },
     sectionTitle: {
       fontSize: 24,
@@ -67,6 +98,23 @@ const styles = StyleSheet.create({
       width: 162,
       borderWidth: 1,
       borderStyle: 'solid',
+    },
+    newButton: {
+      backgroundColor: 'deepskyblue',
+     marginHorizontal: 10,
+     paddingVertical: 10,
+     paddingHorizontal: 75,
+     borderRadius: 20,
+     paddingBottom: 17,
+    },
+    Button: {
+      backgroundColor: 'deepskyblue',
+      marginTop: 32,
+      marginRight: 50,
+      paddingVertical: 10,
+      paddingHorizontal: 35,
+      borderRadius: 20,
+      paddingBottom: 17,
     },
 });
 
