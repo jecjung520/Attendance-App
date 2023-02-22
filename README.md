@@ -5,6 +5,10 @@ Following project aims to create an attendance taking mobile application
 * **Backend**: Firebase
 * **API**: P2P, Mobile Adhoc Network(MANET)
 
+## How To Use
+1. Teacher can generate QR codes
+2. Students can scan the QR code to take attendance
+
 ## Modules
 1. firebase
 2. react-native-async-storage
