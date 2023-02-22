@@ -6,7 +6,7 @@ import { firebase } from '../../Config';
 let emailId = '', userId = '';
 let attendanceList = [];
 
-const ScanScreen = () => {
+const ScanScreen = ({navigation}) => {
     const [currentDate, setCurrentDate] = useState('');
     const [checkInEnable, setCheckInEnable] = useState(true);
     const [hasPermission, setHasPermission] = useState(null);
@@ -90,7 +90,9 @@ const ScanScreen = () => {
         saveDate();
         saveCheckIn();
         uploadCheckIn();
-        alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+        // alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+        allert(`Attendance taken for course ${type}`);
+        navigation.goBack();
     };
 
     if (hasPermission === null) {

@@ -4,9 +4,53 @@ import { StyleSheet, View, Text, Modal } from 'react-native';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import { firebase } from '../../Config';
 
-const Teacher = () => {
+const Teacher = ({navigation}) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [currentDate, setCurrentDate] = useState('');
+    const [course, setText1] = useState('');
+    const [courseName, setText2] = useState('');
+
+    const handleButtonPress = () => {
+        // Do something with text1 and text2 values
+        // const uploadCheckIn = () => {
+    //     let currentTime = (new Date().getHours() + ":" + new Date().getMinutes());
+    //     attendanceList.push({ checkIn: currentTime, checkOut: '', date: currentDate });
+    //     firebase.firestore()
+    //       .collection('users')
+    //       .doc(userId)
+    //       .update({
+    //         attendance: attendanceList
+    //       })
+    //       .then(() => {
+    //         console.log('User updated!');
+    //       });
+    //     attendanceList = [];
+    //     firebase.firestore()
+    //       .collection('users')
+    //       .doc(userId)
+    //       .onSnapshot(documentSnapshot => {
+    //         console.log('User data: ', documentSnapshot.data().attendance);
+    //         if (documentSnapshot.data().attendance !== undefined) {
+    //           documentSnapshot.data().attendance.map(item => {
+    //             attendanceList.push(item);
+    //           });
+    //         }
+    //       });
+    //   };
+        firebase.firestore()
+            .collection('courses')
+            .doc(userId)
+            .set({
+                course: course,
+                name: courseName
+            })
+            .then(() => {
+                console.log('Course Added!');
+                setModalVisible(false);
+                // navigation.goBack();
+            })
+    };
+
     useEffect(() => {
         setCurrentDate(
           new Date().getDate() +
@@ -59,9 +103,31 @@ const Teacher = () => {
             <Text style={styles.dateText}>{curDate}</Text>
 
             <View style={styles.buttonStyle}>
-                <TouchableOpacity style={styles.addButton}>
+                <TouchableOpacity style={styles.addButton} onPress={setModalVisible(true)}>
                     <Text style={{color:'white'}}>Add Courses</Text>
                 </TouchableOpacity>
+                <Modal visible={modalVisible} onRequestClose={setModalVisible(false)}>
+                    <TextInput
+                    style={styles.text}
+                    placeholder="Enter Course Code"
+                    value={course}
+                    onChangeText={txt => setText1(txt)}
+                    />
+                    <TextInput
+                    style={styles.text}
+                    placeholder="Enter Course Name"
+                    value={courseName}
+                    onChangeText={txt => setText2(txt)}
+                    />
+                    <TouchableOpacity style={styles.addButton} onPress={() => {
+                        if (course !== '' && courseName !== '')
+                            handleButtonPress();
+                        else
+                            alert("Please Enter All Data")
+                    }}>
+                    <Text>Save</Text>
+                    </TouchableOpacity>
+                </Modal>
                 <TouchableOpacity style={styles.addButton}>
                     <Text style={{color:'white'}}>Add Students</Text>
                 </TouchableOpacity>
@@ -107,6 +173,13 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginTop: 50,
         borderRadius: 10,
+    },
+    text: {
+        alignSelf: 'center',
+        marginTop: 50,
+        textDecorationLine: 'underline',
+        fontSize: 18,
+        fontWeight: '600',
     }
 })
 
