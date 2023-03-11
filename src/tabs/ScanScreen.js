@@ -3,16 +3,20 @@ import { Text, View, StyleSheet, Button } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { firebase } from '../../Config';
+import { authenticateAsync, hasHardwareAsync, isEnrolledAsync } from 'expo-local-authentication';
 let emailId = '', userId = '';
 let attendanceList = [];
 
-const ScanScreen = ({navigation}) => {
+
+const ScanScreen = () => {
     const [currentDate, setCurrentDate] = useState('');
+    const [course, setCourse] = useState('');
     const [checkInEnable, setCheckInEnable] = useState(true);
     const [hasPermission, setHasPermission] = useState(null);
     const [scanned, setScanned] = useState(false);
 
     useEffect(() => {
+        biometricsAuth();
         (async () => {
         const { status } = await BarCodeScanner.requestPermissionsAsync();
         setHasPermission(status === 'granted');
@@ -27,7 +31,16 @@ const ScanScreen = ({navigation}) => {
     const saveDate = async () => {
       await AsyncStorage.setItem('Date', curDate);
     }
-  
+    
+    const biometricsAuth = async () => {
+      const compatible = await hasHardwareAsync()
+      if (!compatible) throw 'This device is not compatible for biometric authentication'
+      const enrolled = await isEnrolledAsync()
+      if (!enrolled) throw 'This device doesnt have biometric authentication enabled'
+      const result = await authenticateAsync()
+      if (!result.success) throw `${result.error} - Authentication unsuccessful`
+  }
+    
     const getSavedDates = async () => {
       const date = await AsyncStorage.getItem('DATE');
       const status = await AsyncStorage.getItem('STATUS');
@@ -43,17 +56,17 @@ const ScanScreen = ({navigation}) => {
       }
       console.log(date);
       attendanceList = [];
-      firebase.firestore()
-        .collection('users')
-        .doc(userId)
-        .onSnapshot(documentSnapshot => {
-          console.log('User data: ', documentSnapshot.data().attendance);
-          if (documentSnapshot.data().attendance !== undefined) {
-            documentSnapshot.data().attendance.map(item => {
-              attendanceList.push(item);
-            });
-          }
-        });
+      // firebase.firestore()
+      //   .collection('users')
+      //   .doc(userId)
+      //   .onSnapshot(documentSnapshot => {
+      //     console.log('User data: ', documentSnapshot.data().attendance);
+      //     if (documentSnapshot.data().attendance !== undefined) {
+      //       documentSnapshot.data().attendance.map(item => {
+      //         attendanceList.push(item);
+      //       });
+      //     }
+      //   });
     };
     const saveCheckIn = async () => {
         await AsyncStorage.setItem('STATUS', 'CIN');
@@ -61,7 +74,7 @@ const ScanScreen = ({navigation}) => {
 
     const uploadCheckIn = () => {
         let currentTime = (new Date().getHours() + ":" + new Date().getMinutes());
-        attendanceList.push({ checkIn: currentTime, checkOut: '', date: currentDate });
+        attendanceList.push({ time: currentTime, course: course, date: currentDate });
         firebase.firestore()
           .collection('users')
           .doc(userId)
@@ -72,27 +85,26 @@ const ScanScreen = ({navigation}) => {
             console.log('User updated!');
           });
         attendanceList = [];
-        firebase.firestore()
-          .collection('users')
-          .doc(userId)
-          .onSnapshot(documentSnapshot => {
-            console.log('User data: ', documentSnapshot.data().attendance);
-            if (documentSnapshot.data().attendance !== undefined) {
-              documentSnapshot.data().attendance.map(item => {
-                attendanceList.push(item);
-              });
-            }
-          });
+        // firebase.firestore()
+        //   .collection('users')
+        //   .doc(userId)
+        //   .onSnapshot(documentSnapshot => {
+        //     console.log('User data: ', documentSnapshot.data().attendance);
+        //     if (documentSnapshot.data().attendance !== undefined) {
+        //       documentSnapshot.data().attendance.map(item => {
+        //         attendanceList.push(item);
+        //       });
+        //     }
+        //   });
     };
 
     const handleBarCodeScanned = ({ type, data }) => {
         setScanned(true);
         saveDate();
         saveCheckIn();
+        setCourse({data});
         uploadCheckIn();
-        // alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-        allert(`Attendance taken for course ${type}`);
-        navigation.goBack();
+        alert(`Attendance taken for course ${data}`);
     };
 
     if (hasPermission === null) {

@@ -1,42 +1,44 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { Component, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Modal } from 'react-native';
-import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
+import { StyleSheet, View, Text, Modal, TouchableOpacity, TextInput } from 'react-native';
 import { firebase } from '../../Config';
+import Loader from '../common/Loader';
+import Course from './Course';
 
-const Teacher = ({navigation}) => {
+const Teacher = ({ navigation }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [currentDate, setCurrentDate] = useState('');
     const [course, setText1] = useState('');
     const [courseName, setText2] = useState('');
 
-    const handleButtonPress = () => {
+    const handleButtonPress = async () => {
         // Do something with text1 and text2 values
         // const uploadCheckIn = () => {
-    //     let currentTime = (new Date().getHours() + ":" + new Date().getMinutes());
-    //     attendanceList.push({ checkIn: currentTime, checkOut: '', date: currentDate });
-    //     firebase.firestore()
-    //       .collection('users')
-    //       .doc(userId)
-    //       .update({
-    //         attendance: attendanceList
-    //       })
-    //       .then(() => {
-    //         console.log('User updated!');
-    //       });
-    //     attendanceList = [];
-    //     firebase.firestore()
-    //       .collection('users')
-    //       .doc(userId)
-    //       .onSnapshot(documentSnapshot => {
-    //         console.log('User data: ', documentSnapshot.data().attendance);
-    //         if (documentSnapshot.data().attendance !== undefined) {
-    //           documentSnapshot.data().attendance.map(item => {
-    //             attendanceList.push(item);
-    //           });
-    //         }
-    //       });
-    //   };
+        //     let currentTime = (new Date().getHours() + ":" + new Date().getMinutes());
+        //     attendanceList.push({ checkIn: currentTime, checkOut: '', date: currentDate });
+        //     firebase.firestore()
+        //       .collection('users')
+        //       .doc(userId)
+        //       .update({
+        //         attendance: attendanceList
+        //       })
+        //       .then(() => {
+        //         console.log('User updated!');
+        //       });
+        //     attendanceList = [];
+        //     firebase.firestore()
+        //       .collection('users')
+        //       .doc(userId)
+        //       .onSnapshot(documentSnapshot => {
+        //         console.log('User data: ', documentSnapshot.data().attendance);
+        //         if (documentSnapshot.data().attendance !== undefined) {
+        //           documentSnapshot.data().attendance.map(item => {
+        //             attendanceList.push(item);
+        //           });
+        //         }
+        //       });
+        //   };
+        setModalVisible(true);
         firebase.firestore()
             .collection('courses')
             .doc(userId)
@@ -45,22 +47,22 @@ const Teacher = ({navigation}) => {
                 name: courseName
             })
             .then(() => {
-                console.log('Course Added!');
                 setModalVisible(false);
+                console.log('Course Added!');
                 // navigation.goBack();
             })
     };
 
     useEffect(() => {
         setCurrentDate(
-          new Date().getDate() +
-          "/" +
-          (new Date().getMonth() + 1) +
-          "/" +
-          new Date().getFullYear(),
+            new Date().getDate() +
+            "/" +
+            (new Date().getMonth() + 1) +
+            "/" +
+            new Date().getFullYear(),
         );
         saveDate();
-      }, []);
+    }, []);
 
     const curDate = new Date().getDate() + "/" + (new Date().getMonth() + 1) + "/" + new Date().getFullYear();
 
@@ -95,7 +97,7 @@ const Teacher = ({navigation}) => {
     //   };
 
     return (
-        <View style={{flex:1}}>
+        <View style={{ flex: 1 }}>
             <View style={styles.header}>
                 <Text style={styles.headerText}>Manage Courses</Text>
             </View>
@@ -103,37 +105,27 @@ const Teacher = ({navigation}) => {
             <Text style={styles.dateText}>{curDate}</Text>
 
             <View style={styles.buttonStyle}>
-                <TouchableOpacity style={styles.addButton} onPress={setModalVisible(true)}>
-                    <Text style={{color:'white'}}>Add Courses</Text>
+                <TouchableOpacity style={styles.addButton} onPress={() => {
+                    navigation.navigate('Course')
+                }}>
+                    <Text style={{ color: 'white' }}>Add Courses</Text>
                 </TouchableOpacity>
-                <Modal visible={modalVisible} onRequestClose={setModalVisible(false)}>
-                    <TextInput
-                    style={styles.text}
-                    placeholder="Enter Course Code"
-                    value={course}
-                    onChangeText={txt => setText1(txt)}
-                    />
-                    <TextInput
-                    style={styles.text}
-                    placeholder="Enter Course Name"
-                    value={courseName}
-                    onChangeText={txt => setText2(txt)}
-                    />
-                    <TouchableOpacity style={styles.addButton} onPress={() => {
-                        if (course !== '' && courseName !== '')
-                            handleButtonPress();
-                        else
-                            alert("Please Enter All Data")
-                    }}>
-                    <Text>Save</Text>
-                    </TouchableOpacity>
-                </Modal>
                 <TouchableOpacity style={styles.addButton}>
-                    <Text style={{color:'white'}}>Add Students</Text>
+                    <Text style={{ color: 'white' }}>Add Students</Text>
                 </TouchableOpacity>
             </View>
+            <View style={styles.courseView}>
+                <View style={styles.row}>
+                    <View style={styles.square1} />
+                    <View style={styles.square2} />
+                </View>
+                <View style={styles.row}>
+                    <View style={styles.square3} />
+                    <View style={styles.square4} />
+                </View>
+            </View>
         </View>
-        
+
     );
 }
 
@@ -174,13 +166,46 @@ const styles = StyleSheet.create({
         marginTop: 50,
         borderRadius: 10,
     },
-    text: {
+    courseView: {
+        marginTop: 60,
+        height: 500,
+        width: 300,
+        borderColor: 'purple',
+        borderWidth: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
         alignSelf: 'center',
-        marginTop: 50,
-        textDecorationLine: 'underline',
-        fontSize: 18,
-        fontWeight: '600',
-    }
+        marginRight: 5,
+        position: 'relative',
+    },
+    courseHeading: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'center',
+        color: '#000',
+        fontWeight: '700',
+        fontSize: 14
+    },
+    row: {
+        flex: 1,
+        flexDirection: 'row',
+    },
+    square1: {
+        flex: 1,
+        backgroundColor: 'red',
+    },
+    square2: {
+        flex: 1,
+        backgroundColor: 'blue',
+    },
+    square3: {
+        flex: 1,
+        backgroundColor: 'yellow',
+    },
+    square4: {
+        flex: 1,
+        backgroundColor: 'green',
+    },
 })
 
 export default Teacher;

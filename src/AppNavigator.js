@@ -10,6 +10,7 @@ import Main from './screens/Main';
 import Main2 from './screens/Main2';
 import Student from './screens/Student';
 import Teacher from './screens/Teacher';
+import Course from './screens/Course';
 
 const Stack = createStackNavigator();
 
@@ -51,6 +52,11 @@ const AppNavigator = () => {
                     component={Teacher}
                     name='Teacher'
                     options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    component={Course}
+                    name='Course'
+                    options={{ headerShown: false}}
                 />
             </Stack.Navigator>
         </NavigationContainer>
