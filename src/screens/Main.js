@@ -6,6 +6,7 @@ import Leave from '../tabs/Leave';
 import ScanScreen from '../tabs/ScanScreen';
 import Home from './Home';
 import Teacher from './Teacher';
+import QRGenerate from '../tabs/QRgenerate';
 
 const Main = () => {
     const [selectedTab, setSelectedTab] = useState(0)
@@ -14,8 +15,8 @@ const Main = () => {
             {selectedTab == 0 ?
                 (<Teacher />)
                 : selectedTab == 1 ?
-                    (<Attendance />)
-                    : (<ScanScreen/>)}
+                    (<QRGenerate />)
+                    : (<Leave/>)}
             <View style={styles.text}>
                 <TouchableOpacity style={styles.button} onPress={() => {
                     setSelectedTab(0);
