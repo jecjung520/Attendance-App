@@ -4,21 +4,23 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import Loader from '../common/Loader';
 import { firebase } from '../../Config';
 import uuid from 'react-native-uuid';
+import { useNavigation } from '@react-navigation/native';
 
-const Course = ({ navigation }) => {
+const Course = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [course, setText1] = useState('');
     const [courseName, setText2] = useState('')
+    const navigation = useNavigation();
 
     const handleButtonPress = async () => {
-        let userId = uuid.v4();
         setModalVisible(true);
         firebase.firestore()
             .collection('courses')
-            .doc(userId)
+            .doc(course)
             .set({
                 course: course,
-                name: courseName
+                name: courseName,
+                hash: ''
             })
             .then(() => {
                 setModalVisible(false);

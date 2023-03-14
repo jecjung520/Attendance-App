@@ -1,15 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 import React, { Component, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Modal, TouchableOpacity, TextInput } from 'react-native';
 import { firebase } from '../../Config';
-import Loader from '../common/Loader';
-import Course from './Course';
 
-const Teacher = ({ navigation }) => {
+const Teacher = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [currentDate, setCurrentDate] = useState('');
     const [course, setText1] = useState('');
     const [courseName, setText2] = useState('');
+    const navigation = useNavigation();
 
     const handleButtonPress = async () => {
         // Do something with text1 and text2 values

@@ -1,23 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Share, Linking } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Share, Linking, ToastAndroid } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
+import * as Clipboard from 'expo-clipboard';
 
 const QRgenerate = () => {
-  const [inputValue, setInputValue] = useState('asd');
-  const [qrCodeValue, setQrCodeValue] = useState('asd');
+  const [inputValue, setInputValue] = useState(' ');
+  const [qrCodeValue, setQrCodeValue] = useState(' ');
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setQrCodeValue(`https://www.example.com/${inputValue}/${Math.random().toString(36).substring(7)}`);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [inputValue]);
+    setInputValue(inputValue);
+    setQrCodeValue(`https://localhost:3000/qrcode?value=${inputValue}`);
+  }, []);
 
   const onGenerateLinkPress = () => {
-    const webAppUrl = 'http://localhost:3000';
-    const inputValue = 'EE4146';
-    const urlWithInputValue = `${webAppUrl}?inputValue=${encodeURIComponent(inputValue)}`;
-    Linking.openURL(urlWithInputValue);
+    const url = `http://localhost:3000/qrcode?value=${inputValue}`;
+    copyToClipboard(url)
+      .then(() => {
+        ToastAndroid.show('Copied to clipboard', ToastAndroid.SHORT);
+      });
+  };
+
+  const copyToClipboard = async (text) => {
+    await Clipboard.setStringAsync(text);
   };
 
   const onShareLinkPress = async () => {
@@ -43,7 +47,7 @@ const QRgenerate = () => {
         <QRCode value={qrCodeValue} size={200} />
       </View>
       <TouchableOpacity style={styles.button} onPress={onGenerateLinkPress}>
-        <Text style={styles.buttonText}>Generate Link</Text>
+        <Text style={styles.buttonText}>Copy Link</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={onShareLinkPress}>
         <Text style={styles.buttonText}>Share Link</Text>

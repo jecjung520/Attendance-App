@@ -84,6 +84,15 @@ const ScanScreen = () => {
           .then(() => {
             console.log('User updated!');
           });
+        firebase.firestore()
+          .collection('courses')
+          .doc(course)
+          .update({
+            attendance: firebase.firestore.FieldValue.arrayUnion(userId)
+          })
+          .then(() => {
+            console.log('User updated!');
+          });
         attendanceList = [];
         // firebase.firestore()
         //   .collection('users')
@@ -99,12 +108,27 @@ const ScanScreen = () => {
     };
 
     const handleBarCodeScanned = ({ type, data }) => {
-        setScanned(true);
-        saveDate();
-        saveCheckIn();
-        setCourse({data});
-        uploadCheckIn();
-        alert(`Attendance taken for course ${data}`);
+      if (data.length > 6) {
+        const hash = data.substring(7,10);
+        data = data.substring(0,6);
+        firebase.firestore().collection('course').doc(data).get()
+        .then((doc) => {
+          if (doc.exists) {
+            const curHash = doc.data().hash;
+            console.log("hash retrieved: " + curHash);
+          } else {
+            console.log("hash not found");
+          }
+        });
+        // console.log(hash + " " + curHash);
+      }
+      
+      // setScanned(true);
+      // saveDate(); 
+      // saveCheckIn();
+      // setCourse(data);
+      // uploadCheckIn();
+      // alert(`Attendance taken for course ${data}`);
     };
 
     if (hasPermission === null) {
