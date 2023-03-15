@@ -14,6 +14,18 @@ const ScanScreen = () => {
     const [checkInEnable, setCheckInEnable] = useState(true);
     const [hasPermission, setHasPermission] = useState(null);
     const [scanned, setScanned] = useState(false);
+    const [hash, setHash] = useState('');
+
+    const gethash = async() => {
+      const hashRef = firebase.firestore().collection('courses').doc('EE4221');
+      const doc = await hashRef.get();
+      if (!doc.exists) {
+          console.log('No such document!');
+      } else {
+          console.log('Document data:', doc.data().hash);
+          setHash(doc.data().hash);
+      }
+  };
 
     useEffect(() => {
         biometricsAuth();
@@ -108,27 +120,26 @@ const ScanScreen = () => {
     };
 
     const handleBarCodeScanned = ({ type, data }) => {
-      if (data.length > 6) {
-        const hash = data.substring(7,10);
+      gethash();
+      if (data.length == 10) {
         data = data.substring(0,6);
-        firebase.firestore().collection('course').doc(data).get()
-        .then((doc) => {
-          if (doc.exists) {
-            const curHash = doc.data().hash;
-            console.log("hash retrieved: " + curHash);
-          } else {
-            console.log("hash not found");
-          }
-        });
-        // console.log(hash + " " + curHash);
+        const cur = data.substring(7,10);
+        console.log(hash + " " + cur);
+        if (cur == hash) {
+          saveDate(); 
+          saveCheckIn();
+          setCourse(data);
+          uploadCheckIn();
+          alert(`Attendance taken for course ${data}`);
+        } else {
+          alert('Wrong QR Code');
+          
+        }
+      } else {
+        alert('Wrong QR Code');
+        
       }
-      
-      // setScanned(true);
-      // saveDate(); 
-      // saveCheckIn();
-      // setCourse(data);
-      // uploadCheckIn();
-      // alert(`Attendance taken for course ${data}`);
+      setScanned(true);
     };
 
     if (hasPermission === null) {

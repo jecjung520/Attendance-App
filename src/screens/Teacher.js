@@ -9,7 +9,7 @@ const Teacher = () => {
     const [currentDate, setCurrentDate] = useState('');
     const [course, setText1] = useState('');
     const [courseName, setText2] = useState('');
-    const navigation = useNavigation();
+    const navigation = useNavigation();    
 
     const handleButtonPress = async () => {
         // Do something with text1 and text2 values
