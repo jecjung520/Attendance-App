@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 const Splash = ({navigation}) => {
   useEffect(()=>{
     setTimeout(()=>{
-      navigation.navigate('Login');
+      navigation.navigate('Teacher');
     }, 3000);
   }, []);
   return (

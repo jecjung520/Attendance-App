@@ -1,57 +1,147 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import React, { Component, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Modal, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, View, Text, Modal, TouchableOpacity, TextInput, Button } from 'react-native';
 import { firebase } from '../../Config';
 
-const Teacher = () => {
-    const [modalVisible, setModalVisible] = useState(false);
-    const [currentDate, setCurrentDate] = useState('');
-    const [course, setText1] = useState('');
-    const [courseName, setText2] = useState('');
-    const navigation = useNavigation();    
+const Rectangle = ({ text }) => {
+    return (
+        <View style={styles.rectangle}>
+            <Text style={styles.rectangleText}>{text}</Text>
+        </View>
+    );
+};
 
-    const handleButtonPress = async () => {
-        // Do something with text1 and text2 values
-        // const uploadCheckIn = () => {
-        //     let currentTime = (new Date().getHours() + ":" + new Date().getMinutes());
-        //     attendanceList.push({ checkIn: currentTime, checkOut: '', date: currentDate });
-        //     firebase.firestore()
-        //       .collection('users')
-        //       .doc(userId)
-        //       .update({
-        //         attendance: attendanceList
-        //       })
-        //       .then(() => {
-        //         console.log('User updated!');
-        //       });
-        //     attendanceList = [];
-        //     firebase.firestore()
-        //       .collection('users')
-        //       .doc(userId)
-        //       .onSnapshot(documentSnapshot => {
-        //         console.log('User data: ', documentSnapshot.data().attendance);
-        //         if (documentSnapshot.data().attendance !== undefined) {
-        //           documentSnapshot.data().attendance.map(item => {
-        //             attendanceList.push(item);
-        //           });
-        //         }
-        //       });
-        //   };
-        setModalVisible(true);
-        firebase.firestore()
-            .collection('courses')
-            .doc(userId)
-            .set({
-                course: course,
-                name: courseName
-            })
-            .then(() => {
-                setModalVisible(false);
-                console.log('Course Added!');
-                // navigation.goBack();
-            })
+const OpenCourses = ({ visible, onClose, onSave }) => {
+    const [input1Value, setInput1Value] = useState('');
+    const [input2Value, setInput2Value] = useState('');
+
+    const handleSave = () => {
+        // Handle saving the input values here
+        if (input1Value !== '' && input2Value !== '') {
+            console.log('Input 1:', input1Value);
+            console.log('Input 2:', input2Value);
+
+            onSave({ input1Value, input2Value });
+            // Close the popup
+            onClose();
+        } else {
+            alert('Please enter all data');
+        }
     };
+
+    return (
+        <Modal visible={visible} onRequestClose={onClose}>
+            <View style={{ flex: 1 }}>
+                <View style={styles.header}>
+                    <Text style={styles.headerText}>Add Courses</Text>
+                </View>
+                <TextInput
+                    placeholder="Enter input 1"
+                    value={input1Value}
+                    onChangeText={setInput1Value}
+                    style={styles.textInput}
+                />
+                <TextInput
+                    placeholder="Enter input 2"
+                    value={input2Value}
+                    onChangeText={setInput2Value}
+                    style={styles.textInput}
+                />
+                <TouchableOpacity style={styles.addButton} onPress={handleSave}>
+                    <Text style={{ color: 'white' }}>Save</Text>
+                </TouchableOpacity>
+            </View>
+        </Modal>
+    );
+};
+
+const OpenStudents = ({ visible, onClose }) => {
+    const [input1Value, setInput1Value] = useState('');
+    const [input2Value, setInput2Value] = useState('');
+
+    const handleSave = () => {
+        // Handle saving the input values here
+        if (input1Value !== '' && input2Value !== '') {
+            console.log('Input 1:', input1Value);
+            console.log('Input 2:', input2Value);
+            SaveStudents();
+            // Close the popup
+            onClose();
+        } else {
+            alert('Please enter all data');
+        }
+    };
+
+    const SaveStudents = () => {
+        firebase.firestore()
+        .collection('courses')
+        .doc(input1Value)
+        .update({
+          Students: firebase.firestore.FieldValue.arrayUnion(input2Value)
+        })
+        .then(() => {
+          console.log('User updated!');
+        });
+    };
+
+    return (
+        <Modal visible={visible} onRequestClose={onClose}>
+            <View style={{ flex: 1 }}>
+                <View style={styles.header}>
+                    <Text style={styles.headerText}>Add Students</Text>
+                </View>
+                <TextInput
+                    placeholder="Enter input 1"
+                    value={input1Value}
+                    onChangeText={setInput1Value}
+                    style={styles.textInput}
+                />
+                <TextInput
+                    placeholder="Enter input 2"
+                    value={input2Value}
+                    onChangeText={setInput2Value}
+                    style={styles.textInput}
+                />
+                <TouchableOpacity style={styles.addButton} onPress={handleSave}>
+                    <Text style={{ color: 'white' }}>Save</Text>
+                </TouchableOpacity>
+            </View>
+        </Modal>
+    );
+};
+
+const Teacher = () => {
+    const [date, setCurrentDate] = useState('');
+    const [isPopupVisible1, setIsPopupVisible1] = useState(false);
+    const [isPopupVisible2, setIsPopupVisible2] = useState(false);
+    const [rectangles, setRectangles] = useState([]);
+
+    const handleOpenPopup = () => {
+        setIsPopupVisible1(true);
+    };
+
+    const handleClosePopup = () => {
+        setIsPopupVisible1(false);
+    };
+
+    const handleOpenStudent = () => {
+        setIsPopupVisible2(true);
+    };
+
+    const handleCloseStudent = () => {
+        setIsPopupVisible2(false);
+    };
+
+    const handleSavePopup = (data) => {
+        const newRectangle = {
+            id: Date.now(),
+            text: `${data.input1Value} - ${data.input2Value}`,
+        };
+        setRectangles([...rectangles, newRectangle]);
+    };
+
+    const navigation = useNavigation();
 
     useEffect(() => {
         setCurrentDate(
@@ -70,32 +160,6 @@ const Teacher = () => {
         await AsyncStorage.setItem('Date', curDate);
     }
 
-    // const uploadCheckIn = () => {
-    //     let currentTime = (new Date().getHours() + ":" + new Date().getMinutes());
-    //     attendanceList.push({ checkIn: currentTime, checkOut: '', date: currentDate });
-    //     firebase.firestore()
-    //       .collection('users')
-    //       .doc(userId)
-    //       .update({
-    //         attendance: attendanceList
-    //       })
-    //       .then(() => {
-    //         console.log('User updated!');
-    //       });
-    //     attendanceList = [];
-    //     firebase.firestore()
-    //       .collection('users')
-    //       .doc(userId)
-    //       .onSnapshot(documentSnapshot => {
-    //         console.log('User data: ', documentSnapshot.data().attendance);
-    //         if (documentSnapshot.data().attendance !== undefined) {
-    //           documentSnapshot.data().attendance.map(item => {
-    //             attendanceList.push(item);
-    //           });
-    //         }
-    //       });
-    //   };
-
     return (
         <View style={{ flex: 1 }}>
             <View style={styles.header}>
@@ -105,16 +169,25 @@ const Teacher = () => {
             <Text style={styles.dateText}>{curDate}</Text>
 
             <View style={styles.buttonStyle}>
-                <TouchableOpacity style={styles.addButton} onPress={() => {
+                {/* <TouchableOpacity style={styles.addButton} onPress={() => {
                     navigation.navigate('Course')
                 }}>
                     <Text style={{ color: 'white' }}>Add Courses</Text>
+                </TouchableOpacity> */}
+                <TouchableOpacity style={styles.addButton} onPress={handleOpenPopup}>
+                    <Text style={{ color: 'white' }}>Add Courses</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.addButton}>
+                <OpenCourses visible={isPopupVisible1} onClose={handleClosePopup} onSave={handleSavePopup} />
+
+                {/* <TouchableOpacity style={styles.addButton}>
+                    <Text style={{ color: 'white' }}>Add Students</Text>
+                </TouchableOpacity> */}
+                <TouchableOpacity style={styles.addButton} onPress={handleOpenStudent}>
                     <Text style={{ color: 'white' }}>Add Students</Text>
                 </TouchableOpacity>
+                <OpenStudents visible={isPopupVisible2} onClose={handleCloseStudent} />
             </View>
-            <View style={styles.courseView}>
+            {/* <View style={styles.courseView}>
                 <View style={styles.row}>
                     <View style={styles.square1} />
                     <View style={styles.square2} />
@@ -123,6 +196,11 @@ const Teacher = () => {
                     <View style={styles.square3} />
                     <View style={styles.square4} />
                 </View>
+            </View> */}
+            <View style={styles.courseView}>
+                {rectangles.map((rectangle) => (
+                    <Rectangle key={rectangle.id} text={rectangle.text} />
+                ))}
             </View>
         </View>
 
@@ -205,6 +283,26 @@ const styles = StyleSheet.create({
     square4: {
         flex: 1,
         backgroundColor: 'green',
+    },
+    textInput: {
+        width: '90%',
+        height: 50,
+        borderWidth: 1,
+        borderRadius: 10,
+        alignSelf: 'center',
+        paddingLeft: 20,
+        marginTop: 50
+    },
+    rectangle: {
+        width: 100,
+        height: 50,
+        backgroundColor: 'green',
+        margin: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    rectangleText: {
+        color: 'white',
     },
 })
 
