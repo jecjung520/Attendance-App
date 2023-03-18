@@ -59,6 +59,7 @@ const OpenCourses = ({ visible, onClose, onSave }) => {
 const OpenStudents = ({ visible, onClose }) => {
     const [input1Value, setInput1Value] = useState('');
     const [input2Value, setInput2Value] = useState('');
+    const [input3Value, setInput3Value] = useState('');
 
     const handleSave = () => {
         // Handle saving the input values here
@@ -83,6 +84,15 @@ const OpenStudents = ({ visible, onClose }) => {
         .then(() => {
           console.log('User updated!');
         });
+        firebase.firestore()
+        .collection('users')
+        .doc(input3Value)
+        .update({
+          Course: firebase.firestore.FieldValue.arrayUnion(input1Value)
+        })
+        .then(() => {
+            console.log('Course Added');
+        });
     };
 
     return (
@@ -92,15 +102,21 @@ const OpenStudents = ({ visible, onClose }) => {
                     <Text style={styles.headerText}>Add Students</Text>
                 </View>
                 <TextInput
-                    placeholder="Enter input 1"
+                    placeholder="Enter Course"
                     value={input1Value}
                     onChangeText={setInput1Value}
                     style={styles.textInput}
                 />
                 <TextInput
-                    placeholder="Enter input 2"
+                    placeholder="Enter Student Name"
                     value={input2Value}
                     onChangeText={setInput2Value}
+                    style={styles.textInput}
+                />
+                <TextInput
+                    placeholder="Enter SID"
+                    value={input3Value}
+                    onChangeText={setInput3Value}
                     style={styles.textInput}
                 />
                 <TouchableOpacity style={styles.addButton} onPress={handleSave}>

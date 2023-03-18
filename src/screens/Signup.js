@@ -13,7 +13,7 @@ const Signup = ({ navigation }) => {
   const [password, setPassword] = useState('')
 
   const saveDataOnFirestore = () => {
-    let userId = uuid.v4();
+    let userId = uuid.v4().substring(0,8);
     setModalVisible(true);
 
     firebase.firestore()

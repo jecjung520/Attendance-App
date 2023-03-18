@@ -16,7 +16,7 @@ const Main2 = () => {
             {selTab == 0 ?
                 (<Student />)
                 : selTab == 1 ?
-                    (<Attendance />)
+                    (<Schedule />)
                     : (<ScanScreen/>)}
             <View style={styles.text}>
                 <TouchableOpacity style={styles.button} onPress={() => {
