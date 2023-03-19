@@ -13,21 +13,40 @@ const Rectangle = ({ text }) => {
 };
 
 const OpenCourses = ({ visible, onClose, onSave }) => {
-    const [input1Value, setInput1Value] = useState('');
-    const [input2Value, setInput2Value] = useState('');
+    const [course, setCourse] = useState('');
+    const [name, setName] = useState('');
+    const [location, setLocation] = useState('');
+    const [time, setTime] = useState('');
 
     const handleSave = () => {
         // Handle saving the input values here
-        if (input1Value !== '' && input2Value !== '') {
-            console.log('Input 1:', input1Value);
-            console.log('Input 2:', input2Value);
-
-            onSave({ input1Value, input2Value });
+        if (course !== '' && location !== '' && name !== '' && time !== '') {
+            console.log('Course code :', course);
+            console.log('Course name :', name);
+            console.log('Course location :', location);
+            console.log('Course time :', time);
+            saveCourse();
+            onSave({ course, name, location, time });
             // Close the popup
             onClose();
         } else {
             alert('Please enter all data');
         }
+    };
+
+    const saveCourse = async () => {
+        firebase.firestore()
+            .collection('courses')
+            .doc(course)
+            .set({
+                course: course,
+                name: name,
+                location: location,
+                time, time,
+            })
+            .then(() => {
+                console.log('Course Added!');
+            })
     };
 
     return (
@@ -37,15 +56,27 @@ const OpenCourses = ({ visible, onClose, onSave }) => {
                     <Text style={styles.headerText}>Add Courses</Text>
                 </View>
                 <TextInput
-                    placeholder="Enter input 1"
-                    value={input1Value}
-                    onChangeText={setInput1Value}
+                    placeholder="Enter Course Code"
+                    value={course}
+                    onChangeText={setCourse}
                     style={styles.textInput}
                 />
                 <TextInput
-                    placeholder="Enter input 2"
-                    value={input2Value}
-                    onChangeText={setInput2Value}
+                    placeholder="Enter Course Name"
+                    value={name}
+                    onChangeText={setName}
+                    style={styles.textInput}
+                />
+                <TextInput
+                    placeholder="Enter Course Location"
+                    value={location}
+                    onChangeText={setLocation}
+                    style={styles.textInput}
+                />
+                <TextInput
+                    placeholder="Enter Course Time"
+                    value={time}
+                    onChangeText={setTime}
                     style={styles.textInput}
                 />
                 <TouchableOpacity style={styles.addButton} onPress={handleSave}>
