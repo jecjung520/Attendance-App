@@ -11,6 +11,7 @@ import Main2 from './screens/Main2';
 import Student from './screens/Student';
 import Teacher from './screens/Teacher';
 import Course from './screens/Course';
+import ScanScreen from './tabs/ScanScreen';
 
 const Stack = createStackNavigator();
 
@@ -56,6 +57,11 @@ const AppNavigator = () => {
                 <Stack.Screen
                     component={Course}
                     name='Course'
+                    options={{ headerShown: false}}
+                />
+                <Stack.Screen
+                    component={ScanScreen}
+                    name='ScanScreen'
                     options={{ headerShown: false}}
                 />
             </Stack.Navigator>

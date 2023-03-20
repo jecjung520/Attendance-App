@@ -1,28 +1,31 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { Component, useEffect, useState } from 'react';
 import { firebase } from '../../Config';
-import { StyleSheet, TouchableOpacity, View, Text, Image, ScrollView } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text, Image, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import { useNavigation } from '@react-navigation/native';
 let userId = '';
 let extra = [];
+let rects = [];
 
 const Student = () => {
   const [rectangles, setRectangles] = useState([]);
-
+  const [attend, setAttend] = useState(false);
+  const [curcourse, setcurcourse] = useState('');
   const curDate = new Date().getDate() + "/" + (new Date().getMonth() + 1) + "/" + new Date().getFullYear();
   const today = new Date().toLocaleString('default', { weekday: 'short' }).toUpperCase().substring(0, 3);
   console.log(today);
-  
-  const rects = [];
 
   const fetchData = async () => {
+    rects = [];
     extra = [];
     userId = await AsyncStorage.getItem('USERID');
     const userRef = firebase.firestore().collection('users').doc(userId);
     const course = (await userRef.get()).data().Course;
-    course.forEach(async (course) => {
-      const courseRef = firebase.firestore().collection('courses').doc(course);
+
+    for (const courseItem of course) {
+      const courseRef = firebase.firestore().collection('courses').doc(courseItem);
       const doc = await courseRef.get();
       const title = doc.data().name;
       const location = doc.data().location;
@@ -54,11 +57,16 @@ const Student = () => {
         default:
           break;
       }
-      
+
       if (today == weekday) {
-        rects.push(<View style={styles.rectangle}/>);
+        rects.push(<TouchableOpacity>
+          <View style={styles.rectangle}>
+            <Text style={styles.rectangleText}>{courseItem}: {title}</Text>
+            <Text style={{ marginLeft: 10 }}>{time.substring(1)}                                         {location}</Text>
+          </View>
+        </TouchableOpacity>);
       }
-      
+
       // split time into start and end times
       const timeRange = time.substring(1);
       const [startTime, endTime] = timeRange.split("~");
@@ -66,14 +74,49 @@ const Student = () => {
       // extract minute from end time
       const endMinute = endTime.substring(3);
 
-      console.log(weekday, startTime.substring(0, 2), endTime.substring(0, 2), endMinute);
-    });
-    setRectangles(rects);
+      const currentTime = new Date().toLocaleTimeString();
+      if (currentTime.substring(0, 2) >= startTime.substring(0, 2) && currentTime.substring(0, 2) <= endTime.substring(0, 2)) {
+        setAttend(true);
+        setcurcourse(courseItem);
+      } else {
+        setAttend(false);
+      }
+    }
+    console.log(rects);
+    if (rects.length > 0) {
+      setRectangles(rects);
+    }
+    console.log(rectangles);
   }
+
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  const navigation = useNavigation();
+
+  const handlePress = () => {
+    if (attend) {
+      Alert.alert(
+        'Confirm Navigation',
+        'Are you sure you want to navigate to the Scan Screen?',
+        [
+          {
+            text: 'Cancel',
+            onPress: () => console.log('Navigation cancelled'),
+            style: 'cancel',
+          },
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('ScanScreen'),
+          },
+        ]
+      );
+    } else {
+      alert('No Classes to Attend');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -88,39 +131,39 @@ const Student = () => {
       <Text style={styles.take}>Take Attendance</Text>
       <View style={{ height: 80, marginTop: 20, marginBottom: 20 }}>
         <ScrollView style={styles.weekday} horizontal>
-          <View style={today == "MON" ? styles.curbox : styles.weekbox}>
-            <Text>MON</Text>
-            <Text style={{ fontWeight: 'bold' }}>1</Text>
-          </View>
-          <View style={today == "TUE" ? styles.curbox : styles.weekbox}>
-            <Text>TUE</Text>
-            <Text style={{ fontWeight: 'bold' }}>1</Text>
-          </View>
-          <View style={today == "WED" ? styles.curbox : styles.weekbox}>
-            <Text>WED</Text>
-            <Text style={{ fontWeight: 'bold' }}>1</Text>
-          </View>
-          <View style={today == "THU" ? styles.curbox : styles.weekbox}>
-            <Text>THU</Text>
-            <Text style={{ fontWeight: 'bold' }}>1</Text>
-          </View>
-          <View style={today == "FRI" ? styles.curbox : styles.weekbox}>
-            <Text>FRI</Text>
-            <Text style={{ fontWeight: 'bold' }}>1</Text>
-          </View>
+          <TouchableOpacity>
+            <View style={today == "MON" ? styles.curbox : styles.weekbox}>
+              <Text>MON</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <View style={today == "TUE" ? styles.curbox : styles.weekbox}>
+              <Text>TUE</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <View style={today == "WED" ? styles.curbox : styles.weekbox}>
+              <Text>WED</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <View style={today == "THU" ? styles.curbox : styles.weekbox}>
+              <Text>THU</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <View style={today == "FRI" ? styles.curbox : styles.weekbox}>
+              <Text>FRI</Text>
+            </View>
+          </TouchableOpacity>
         </ScrollView>
       </View>
 
-      {/* <View>
-        <View style={styles.time}>
-          <Text style={{ color: 'grey' }}>7:00   -   08:00</Text>
-          <View style={styles.freeArea}>
-            <Text style={{ color: 'grey' }}>free</Text>
-            <View style={styles.radio}></View>
-          </View>
-        </View>
-      </View> */}
-      <View style={{marginTop:100}}>
+      <TouchableOpacity style={styles.takeAttendance} onPress={handlePress}>
+        <Text style={{ alignSelf: 'center' }}>Attend</Text>
+      </TouchableOpacity>
+
+      <View style={{ marginTop: 20 }}>
         {rectangles}
       </View>
 
@@ -164,7 +207,7 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   weekbox: {
-    height: 68,
+    height: 60,
     width: 59,
     borderColor: 'grey',
     borderWidth: 1,
@@ -174,8 +217,8 @@ const styles = StyleSheet.create({
     marginRight: 5
   },
   curbox: {
-    height: 68,
-    width: 59,
+    height: 66,
+    width: 65,
     borderColor: 'grey',
     borderWidth: 1,
     borderRadius: 12,
@@ -202,16 +245,24 @@ const styles = StyleSheet.create({
     marginLeft: 10
   },
   rectangle: {
-    width: 100,
+    width: 300,
     height: 50,
-    backgroundColor: 'green',
     margin: 10,
-    alignItems: 'center',
+    backgroundColor: '#247BA0',
+    borderRadius: 12,
     justifyContent: 'center',
   },
   rectangleText: {
     color: 'white',
+    marginLeft: 10,
   },
+  takeAttendance: {
+    width: 60,
+    height: 25,
+    backgroundColor: '#03A9F4',
+    justifyContent: 'center',
+    borderRadius: 5
+  }
 })
 
 export default Student;

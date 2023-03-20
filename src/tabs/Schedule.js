@@ -18,8 +18,8 @@ const Schedule = () => {
     userId = await AsyncStorage.getItem('USERID');
     const userRef = firebase.firestore().collection('users').doc(userId);
     const course = (await userRef.get()).data().Course;
-    course.forEach(async (course) => {
-      const courseRef = firebase.firestore().collection('courses').doc(course);
+    for (const courseItem of course) {
+      const courseRef = firebase.firestore().collection('courses').doc(courseItem);
       const doc = await courseRef.get();
       const title = doc.data().name;
       const location = doc.data().location;
@@ -61,13 +61,13 @@ const Schedule = () => {
 
       console.log(weekday, startTime.substring(0, 2), endTime.substring(0, 2), endMinute);
       events_data.push({
-        title: course,
+        title: courseItem,
         startTime: genTimeBlock(weekday, startTime.substring(0, 2)),
         endTime: genTimeBlock(weekday, endTime.substring(0, 2), endMinute),
         location: location,
         extra_descriptions: extra,
       })
-    });
+    }
   }
 
   const handleRefresh = async () => {
