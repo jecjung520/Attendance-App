@@ -17,7 +17,7 @@ const Main2 = () => {
                 (<Student />)
                 : selTab == 1 ?
                     (<Schedule />)
-                    : (<ScanScreen/>)}
+                    : (<Leave/>)}
             <View style={styles.text}>
                 <TouchableOpacity style={styles.button} onPress={() => {
                     setTab(0);

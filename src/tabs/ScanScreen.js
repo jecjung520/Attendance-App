@@ -4,6 +4,7 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { firebase } from '../../Config';
 import { authenticateAsync, hasHardwareAsync, isEnrolledAsync } from 'expo-local-authentication';
+import { useRoute } from '@react-navigation/native';
 let emailId = '', userId = '';
 let attendanceList = [];
 
@@ -15,9 +16,11 @@ const ScanScreen = () => {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [hash, setHash] = useState('');
+  const route = useRoute();
+  const { curcourse } = route.params;
 
   const gethash = async () => {
-    const hashRef = firebase.firestore().collection('courses').doc('EE4221');
+    const hashRef = firebase.firestore().collection('courses').doc(curcourse);
     const doc = await hashRef.get();
     if (!doc.exists) {
       console.log('No such document!');

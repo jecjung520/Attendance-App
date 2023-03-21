@@ -4,13 +4,8 @@ import React, { Component, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Modal, TouchableOpacity, TextInput, Button } from 'react-native';
 import { firebase } from '../../Config';
 
-const Rectangle = ({ text }) => {
-    return (
-        <View style={styles.rectangle}>
-            <Text style={styles.rectangleText}>{text}</Text>
-        </View>
-    );
-};
+let rects = [];
+let extra = [];
 
 const OpenCourses = ({ visible, onClose, onSave }) => {
     const [course, setCourse] = useState('');
@@ -35,6 +30,7 @@ const OpenCourses = ({ visible, onClose, onSave }) => {
     };
 
     const saveCourse = async () => {
+        userId = await AsyncStorage.getItem('USERID');
         firebase.firestore()
             .collection('courses')
             .doc(course)
@@ -46,7 +42,16 @@ const OpenCourses = ({ visible, onClose, onSave }) => {
             })
             .then(() => {
                 console.log('Course Added!');
+            });
+        firebase.firestore()
+            .collection('users')
+            .doc(userId)
+            .update({
+                Course: firebase.firestore.FieldValue.arrayUnion(course)
             })
+            .then(() => {
+                console.log('Course Added');
+            });
     };
 
     return (
@@ -107,23 +112,23 @@ const OpenStudents = ({ visible, onClose }) => {
 
     const SaveStudents = () => {
         firebase.firestore()
-        .collection('courses')
-        .doc(input1Value)
-        .update({
-          Students: firebase.firestore.FieldValue.arrayUnion(input2Value)
-        })
-        .then(() => {
-          console.log('User updated!');
-        });
+            .collection('courses')
+            .doc(input1Value)
+            .update({
+                Students: firebase.firestore.FieldValue.arrayUnion(input2Value)
+            })
+            .then(() => {
+                console.log('User updated!');
+            });
         firebase.firestore()
-        .collection('users')
-        .doc(input3Value)
-        .update({
-          Course: firebase.firestore.FieldValue.arrayUnion(input1Value)
-        })
-        .then(() => {
-            console.log('Course Added');
-        });
+            .collection('users')
+            .doc(input3Value)
+            .update({
+                Course: firebase.firestore.FieldValue.arrayUnion(input1Value)
+            })
+            .then(() => {
+                console.log('Course Added');
+            });
     };
 
     return (
@@ -164,6 +169,61 @@ const Teacher = () => {
     const [isPopupVisible2, setIsPopupVisible2] = useState(false);
     const [rectangles, setRectangles] = useState([]);
 
+    const fetchData = async () => {
+        rects = [];
+        extra = [];
+        userId = await AsyncStorage.getItem('USERID');
+        console.log(userId);
+        const userRef = firebase.firestore().collection('users').doc(userId);
+        const course = (await userRef.get()).data().Course;
+
+        for (const courseItem of course) {
+            const courseRef = firebase.firestore().collection('courses').doc(courseItem);
+            const doc = await courseRef.get();
+            const title = doc.data().name;
+            const location = doc.data().location;
+
+            // extract time
+            const time = doc.data().time;
+            let weekday = time.charAt(0);
+            switch (weekday) {
+                case "M":
+                    weekday = "MON";
+                    break;
+                case "T":
+                    weekday = "TUE";
+                    break;
+                case "W":
+                    weekday = "WED";
+                    break;
+                case "R":
+                    weekday = "THU";
+                    break;
+                case "F":
+                    weekday = "FRI";
+                    break;
+                case "S":
+                    weekday = "SUN";
+                    break;
+                default:
+                    break;
+            }
+
+            rects.push(<TouchableOpacity>
+                <View style={styles.rectangle}>
+                    <Text style={styles.rectangleText}>{courseItem}: {title}</Text>
+                    <Text style={{ marginLeft: 10 }}>{time.substring(1)}                                         {location}</Text>
+                </View>
+            </TouchableOpacity>);
+        }
+        console.log(rects);
+        // if (rects.length > 0) {
+        //     setRectangles(rects);
+        // }
+        setRectangles(rects);
+        console.log(rectangles);
+    }
+
     const handleOpenPopup = () => {
         setIsPopupVisible1(true);
     };
@@ -180,14 +240,6 @@ const Teacher = () => {
         setIsPopupVisible2(false);
     };
 
-    const handleSavePopup = (data) => {
-        const newRectangle = {
-            id: Date.now(),
-            text: `${data.input1Value} - ${data.input2Value}`,
-        };
-        setRectangles([...rectangles, newRectangle]);
-    };
-
     const navigation = useNavigation();
 
     useEffect(() => {
@@ -198,6 +250,7 @@ const Teacher = () => {
             "/" +
             new Date().getFullYear(),
         );
+        fetchData();
         saveDate();
     }, []);
 
@@ -216,38 +269,18 @@ const Teacher = () => {
             <Text style={styles.dateText}>{curDate}</Text>
 
             <View style={styles.buttonStyle}>
-                {/* <TouchableOpacity style={styles.addButton} onPress={() => {
-                    navigation.navigate('Course')
-                }}>
-                    <Text style={{ color: 'white' }}>Add Courses</Text>
-                </TouchableOpacity> */}
                 <TouchableOpacity style={styles.addButton} onPress={handleOpenPopup}>
                     <Text style={{ color: 'white' }}>Add Courses</Text>
                 </TouchableOpacity>
-                <OpenCourses visible={isPopupVisible1} onClose={handleClosePopup} onSave={handleSavePopup} />
+                <OpenCourses visible={isPopupVisible1} onClose={handleClosePopup} />
 
-                {/* <TouchableOpacity style={styles.addButton}>
-                    <Text style={{ color: 'white' }}>Add Students</Text>
-                </TouchableOpacity> */}
                 <TouchableOpacity style={styles.addButton} onPress={handleOpenStudent}>
                     <Text style={{ color: 'white' }}>Add Students</Text>
                 </TouchableOpacity>
                 <OpenStudents visible={isPopupVisible2} onClose={handleCloseStudent} />
             </View>
-            {/* <View style={styles.courseView}>
-                <View style={styles.row}>
-                    <View style={styles.square1} />
-                    <View style={styles.square2} />
-                </View>
-                <View style={styles.row}>
-                    <View style={styles.square3} />
-                    <View style={styles.square4} />
-                </View>
-            </View> */}
-            <View style={styles.courseView}>
-                {rectangles.map((rectangle) => (
-                    <Rectangle key={rectangle.id} text={rectangle.text} />
-                ))}
+            <View style={{ alignItems:'center', marginTop:50}}>
+                {rectangles}
             </View>
         </View>
 
@@ -341,15 +374,16 @@ const styles = StyleSheet.create({
         marginTop: 50
     },
     rectangle: {
-        width: 100,
+        width: 300,
         height: 50,
-        backgroundColor: 'green',
         margin: 10,
-        alignItems: 'center',
+        backgroundColor: '#247BA0',
+        borderRadius: 12,
         justifyContent: 'center',
     },
     rectangleText: {
         color: 'white',
+        marginLeft: 10,
     },
 })
 

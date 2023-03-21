@@ -2,18 +2,36 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Share, Linking, ToastAndroid } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import * as Clipboard from 'expo-clipboard';
+import { firebase } from '../../Config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Picker } from '@react-native-picker/picker';
 
 const QRgenerate = () => {
-  const [inputValue, setInputValue] = useState(' ');
-  const [qrCodeValue, setQrCodeValue] = useState(' ');
+  const [inputValue, setInputValue] = useState('');
+  const [qrCodeValue, setQrCodeValue] = useState('');
+  const [selectedOption, setSelectedOption] = useState('');
+  const options = [];
+  const [list, setList] = useState([]);
+
+  const fetchData = async () => {
+    userId = await AsyncStorage.getItem('USERID');
+    const userRef = firebase.firestore().collection('users').doc(userId);
+    const course = (await userRef.get()).data().Course;
+    for (const courseItem of course) {
+      options.push(courseItem);
+    }
+  };
 
   useEffect(() => {
+    fetchData().then(() => {
+      setList(options);
+    });
     setInputValue(inputValue);
-    setQrCodeValue(`https://localhost:3000/qrcode?value=${inputValue}`);
+    setQrCodeValue(`https://localhost:3000/qrcode?value=${selectedOption}`);
   }, []);
 
   const onGenerateLinkPress = () => {
-    const url = `http://localhost:3000/qrcode?value=${inputValue}`;
+    const url = `http://localhost:3000/qrcode?value=${selectedOption}`;
     copyToClipboard(url)
       .then(() => {
         ToastAndroid.show('Copied to clipboard', ToastAndroid.SHORT);
@@ -36,15 +54,31 @@ const QRgenerate = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>QR Code Generator</Text>
-      <TextInput
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Create QR Code</Text>
+      </View>
+      {/* <TextInput
         style={styles.input}
         placeholder="Enter text to encode"
         value={inputValue}
         onChangeText={setInputValue}
-      />
+      /> */}
+      <View style={styles.textInput}>
+        <Picker
+          selectedValue={selectedOption}
+          onValueChange={setSelectedOption}
+        >
+          <Picker.Item label='Select an option' value='' />
+          {list.map((option, index) => (
+            <Picker.Item key={index} label={option} value={option} />
+          ))}
+        </Picker>
+      </View>
+      {selectedOption ? (
+        <Text style={styles.selectedOption}>You selected {selectedOption}</Text>
+      ) : null}
       <View style={styles.qrCodeContainer}>
-        <QRCode value={qrCodeValue} size={200} />
+        <QRCode value={'temp'} size={200} />
       </View>
       <TouchableOpacity style={styles.button} onPress={onGenerateLinkPress}>
         <Text style={styles.buttonText}>Copy Link</Text>
@@ -90,6 +124,27 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 16,
+  },
+  header: {
+    width: '100%',
+    height: 60,
+    elevation: 4,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    paddingLeft: 20
+  },
+  headerText: {
+    color: '#000',
+    fontWeight: '700',
+    fontSize: 16
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 5,
+    paddingLeft: 10,
+    paddingRight: 10,
+    width: '100%',
   },
 });
 

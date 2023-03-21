@@ -5,15 +5,24 @@ import { firebase } from '../../Config';
 //import firestore from '@react-native-firebase/firestore';
 import Loader from '../common/Loader';
 import uuid from 'react-native-uuid';
+import { Picker } from '@react-native-picker/picker';
 
 const Signup = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [selected, setSelected] = useState('');
+
+  const handleSelected = (value) => {
+    setSelected(value);
+  }
 
   const saveDataOnFirestore = () => {
     let userId = uuid.v4().substring(0,8);
+    if (selected === 'T') {
+      userId = 'T' + userId.substring(1);
+    }
     setModalVisible(true);
 
     firebase.firestore()
@@ -48,7 +57,17 @@ const Signup = ({ navigation }) => {
         value={password}
         onChangeText={txt => setPassword(txt)}
         style={styles.idpw} />
-        
+      <View style={{ flexDirection:'row',alignItems:'center'}}>
+      <Text>Please select an option:     </Text>
+      <Picker
+        selectedValue={selected}
+        onValueChange={setSelected}
+        style={{ justifyContent:'flex-start', height:50, width: 150 }}
+      >
+        <Picker.Item label="Teacher" value="T" />
+        <Picker.Item label="Student" value="S" />
+      </Picker>
+      </View>
       <TouchableOpacity
         style={styles.but}
         onPress={() => {

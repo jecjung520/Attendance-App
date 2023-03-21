@@ -109,7 +109,7 @@ const Student = () => {
           },
           {
             text: 'OK',
-            onPress: () => navigation.navigate('ScanScreen'),
+            onPress: () => navigation.navigate('ScanScreen', { curcourse }),
           },
         ]
       );
