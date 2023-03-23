@@ -1,9 +1,7 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { Component, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import Loader from '../common/Loader';
 import { firebase } from '../../Config';
-import uuid from 'react-native-uuid';
 import { useNavigation } from '@react-navigation/native';
 
 const Course = () => {

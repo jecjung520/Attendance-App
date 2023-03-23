@@ -8,16 +8,6 @@ const Attendance = ({ navigation }) => {
   const [QRImage, setQRImage] = useState('');
   const ref = useRef();
 
-  // const GenerateQR=() => {
-  //   ref.current.toDataURL((data) => {
-  //   setQRImage('data:image/png;base64,'+data)
-  //   })
-  // }
-
-  const GenerateQR = () => {
-
-  }
-
   const handleShare = async () => {
     const options = {
       title: 'Share your QRcode',

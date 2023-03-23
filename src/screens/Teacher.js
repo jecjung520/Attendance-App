@@ -7,7 +7,7 @@ import { firebase } from '../../Config';
 let rects = [];
 let extra = [];
 
-const OpenCourses = ({ visible, onClose, onSave }) => {
+const OpenCourses = ({ visible, onClose }) => {
     const [course, setCourse] = useState('');
     const [name, setName] = useState('');
     const [location, setLocation] = useState('');
@@ -21,7 +21,6 @@ const OpenCourses = ({ visible, onClose, onSave }) => {
             console.log('Course location :', location);
             console.log('Course time :', time);
             saveCourse();
-            onSave({ course, name, location, time });
             // Close the popup
             onClose();
         } else {
@@ -31,6 +30,9 @@ const OpenCourses = ({ visible, onClose, onSave }) => {
 
     const saveCourse = async () => {
         userId = await AsyncStorage.getItem('USERID');
+        const professorRef = firebase.firestore().collection('users').doc(userId).get();
+        const professor = (await professorRef).data().name;
+
         firebase.firestore()
             .collection('courses')
             .doc(course)
@@ -38,7 +40,8 @@ const OpenCourses = ({ visible, onClose, onSave }) => {
                 course: course,
                 name: name,
                 location: location,
-                time, time,
+                time: time,
+                professor: professor,
             })
             .then(() => {
                 console.log('Course Added!');

@@ -1,9 +1,7 @@
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { firebase } from '../../Config';
-import { BarCodeScanner } from 'expo-barcode-scanner';
 let emailId = '', userId = '';
 let attendanceList = [];
 

@@ -2,7 +2,6 @@ import React, { Component, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { firebase } from '../../Config';
-import { getDatabase, ref, onValue} from "firebase/compat/database";
 import Loader from '../common/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 

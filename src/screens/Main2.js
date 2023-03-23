@@ -4,10 +4,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import Leave from '../tabs/Leave';
 import Schedule from '../tabs/Schedule';
-import ScanScreen from '../tabs/ScanScreen';
 import Student from './Student';
-import Home from './Home';
-import Attendance from '../tabs/Attendance';
 
 const Main2 = () => {
     const [selTab, setTab] = useState(0)

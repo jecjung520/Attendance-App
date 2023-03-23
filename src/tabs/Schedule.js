@@ -24,7 +24,7 @@ const Schedule = () => {
       const title = doc.data().name;
       const location = doc.data().location;
       const professor = doc.data().professor;
-      extra.push(professor);
+      extra = [professor];
 
       // extract time
       const time = doc.data().time;

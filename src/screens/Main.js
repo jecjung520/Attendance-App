@@ -1,10 +1,8 @@
 import React, { Component, useState } from 'react';
 import { Image, StyleSheet, View, Text } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import Attendance from '../tabs/Attendance';
+
 import Leave from '../tabs/Leave';
-import ScanScreen from '../tabs/ScanScreen';
-import Home from './Home';
 import Teacher from './Teacher';
 import QRGenerate from '../tabs/QRgenerate';
 

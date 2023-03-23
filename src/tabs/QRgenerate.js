@@ -32,6 +32,7 @@ const QRgenerate = () => {
 
   const onGenerateLinkPress = () => {
     const url = `http://localhost:3000/qrcode?value=${selectedOption}`;
+    setQrCodeValue(`https://localhost:3000/qrcode?value=${selectedOption}`);
     copyToClipboard(url)
       .then(() => {
         ToastAndroid.show('Copied to clipboard', ToastAndroid.SHORT);
@@ -57,12 +58,6 @@ const QRgenerate = () => {
       <View style={styles.header}>
         <Text style={styles.headerText}>Create QR Code</Text>
       </View>
-      {/* <TextInput
-        style={styles.input}
-        placeholder="Enter text to encode"
-        value={inputValue}
-        onChangeText={setInputValue}
-      /> */}
       <View style={styles.textInput}>
         <Picker
           selectedValue={selectedOption}
