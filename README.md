@@ -2,8 +2,7 @@
 
 Following project aims to create an attendance taking mobile application
 * **Framework**: React Native
-* **Backend**: Firebase
-* **API**: P2P, Mobile Adhoc Network(MANET)
+* **Backend**: Node.js, Next.js, Firebase
 
 ## How To Use
 1. Teacher can generate QR codes
@@ -16,4 +15,9 @@ Following project aims to create an attendance taking mobile application
 4. react-native-gesture-handler
 5. react-native-uuid
 6. react-native-calendars
-6. react-native-papers
+7. react-native-permissions
+8. react-native-screens
+9. react-native-share
+10. react-native-timetable
+11. react-native-svg
+12. react-native-biometrics
