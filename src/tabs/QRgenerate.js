@@ -27,12 +27,12 @@ const QRgenerate = () => {
       setList(options);
     });
     setInputValue(inputValue);
-    setQrCodeValue(`https://localhost:3000/qrcode?value=${selectedOption}`);
+    setQrCodeValue(`https://localhost:3000/auth?value=${selectedOption}`);
   }, []);
 
   const onGenerateLinkPress = () => {
-    const url = `http://localhost:3000/qrcode?value=${selectedOption}`;
-    setQrCodeValue(`https://localhost:3000/qrcode?value=${selectedOption}`);
+    const url = `http://localhost:3000/auth?value=${selectedOption}`;
+    setQrCodeValue(`https://localhost:3000/auth?value=${selectedOption}`);
     copyToClipboard(url)
       .then(() => {
         ToastAndroid.show('Copied to clipboard', ToastAndroid.SHORT);

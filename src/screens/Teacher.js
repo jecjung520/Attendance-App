@@ -3,6 +3,8 @@ import { useNavigation } from '@react-navigation/native';
 import React, { Component, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Modal, TouchableOpacity, TextInput, Button } from 'react-native';
 import { firebase } from '../../Config';
+import * as DocumentPicker from 'expo-document-picker';
+import Papa from 'papaparse';
 
 let rects = [];
 let extra = [];
@@ -99,6 +101,60 @@ const OpenStudents = ({ visible, onClose }) => {
     const [input1Value, setInput1Value] = useState('');
     const [input2Value, setInput2Value] = useState('');
     const [input3Value, setInput3Value] = useState('');
+    const [csvColumn, setCsvColumn] = useState([]);
+
+    const pickDocument = async () => {
+        try {
+            const result = await DocumentPicker.getDocumentAsync({
+                type: '*/*',
+                multiple: false,
+                copyToCacheDirectory: true,
+            });
+
+            if (result.type === 'success') {
+                parseDocument(result.uri);
+            }
+        } catch (err) {
+            console.error('Error picking document:', err);
+        }
+    };
+
+    const parseDocument = async (uri) => {
+        try {
+            const response = await fetch(uri);
+            const text = await response.text();
+            Papa.parse(text, {
+                complete: (results) => {
+                    extractColumn(results.data, 'name');
+                },
+                header: true,
+            });
+        } catch (err) {
+            console.error('Error parsing CSV:', err);
+        }
+    };
+
+    const extractColumn = (data, columnName) => {
+        const columnData = data.map((row) => row[columnName]);
+        setCsvColumn(columnData);
+    };
+
+    const saveToFirestore = async () => {
+        try {
+            await firebase.firestore()
+                .collection('courses')
+                .doc(input1Value)
+                .set(
+                    {
+                        Students: csvColumn,
+                    },
+                    { merge: true },
+                );
+            console.log('Data saved to Firestore successfully.');
+        } catch (err) {
+            console.error('Error saving data to Firestore:', err);
+        }
+    };
 
     const handleSave = () => {
         // Handle saving the input values here
@@ -158,6 +214,19 @@ const OpenStudents = ({ visible, onClose }) => {
                     onChangeText={setInput3Value}
                     style={styles.textInput}
                 />
+                <TouchableOpacity onPress={pickDocument} style={styles.button}>
+                    <Text style={styles.buttonText}>Pick CSV</Text>
+                </TouchableOpacity>
+                {csvColumn.length > 0 && (
+                    <>
+                        <Text style={{ textAlign:'center' }}>Column data:</Text>
+                        <Text style={{ textAlign:'center' }}>{JSON.stringify(csvColumn.slice(0,3))}</Text>
+                        <TouchableOpacity onPress={saveToFirestore} style={styles.button}>
+                            <Text style={styles.buttonText}>Save to Firestore</Text>
+                        </TouchableOpacity>
+                    </>
+                )}
+
                 <TouchableOpacity style={styles.addButton} onPress={handleSave}>
                     <Text style={{ color: 'white' }}>Save</Text>
                 </TouchableOpacity>
@@ -282,7 +351,7 @@ const Teacher = () => {
                 </TouchableOpacity>
                 <OpenStudents visible={isPopupVisible2} onClose={handleCloseStudent} />
             </View>
-            <View style={{ alignItems:'center', marginTop:50}}>
+            <View style={{ alignItems: 'center', marginTop: 50 }}>
                 {rectangles}
             </View>
         </View>
@@ -387,6 +456,21 @@ const styles = StyleSheet.create({
     rectangleText: {
         color: 'white',
         marginLeft: 10,
+    },
+    button: {
+        backgroundColor: '#2196F3',
+        width: 150,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'center',
+        borderRadius: 10,
+        marginTop:10
+    },
+    buttonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
 })
 

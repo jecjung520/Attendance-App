@@ -46,7 +46,8 @@ const Login = ({ navigation }) => {
         placeholder="Enter Password"
         value={password}
         onChangeText={txt => setPassword(txt)}
-        style={styles.idpw} />
+        style={styles.idpw}
+        secureTextEntry={true} />
 
       <TouchableOpacity
         style={styles.but}
